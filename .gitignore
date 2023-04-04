@@ -1,32 +1,101 @@
-# Prerequisites
-*.d
+#include <iostream>
+#include <fstream>
+#include <stdlib.h>
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+using namespace std;
 
-# Precompiled Headers
-*.gch
-*.pch
+struct Dado
+{
+	string Valor;
+	Dado* Prox;
+};
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+struct Lista
+{
+	Dado* Inicio;
+	Dado* Fim;
+	int Tam;
+};
 
-# Fortran module files
-*.mod
-*.smod
+void Cria_Lista(Lista* L)
+{
+	L->Inicio = NULL;
+	L->Fim = NULL;
+	L->Tam = 0;
+}
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+Dado* Cria_Dado(string Temp)
+{
+	Dado* Elemento;
+	Elemento = new Dado;
+	Elemento->Valor = Temp;
+	return Elemento;
+}
 
-# Executables
-*.exe
-*.out
-*.app
+void Coloca_Na_Lista(Lista* L,string Temp)
+{
+	Dado* Elemento;
+	Elemento = Cria_Dado(Temp);
+	if(L->Tam==0)
+	{
+		L->Inicio = Elemento;
+	}
+	else
+	{
+		L->Fim->Prox = Elemento;
+	}
+	L->Fim = Elemento;
+	L->Tam++;
+}
+
+void Imprime(Lista* L)
+{
+	Dado* Cont;
+	Cont = L->Inicio;
+	while(Cont!=NULL)
+	{
+		cout << Cont->Valor << endl;
+		Cont = Cont->Prox;
+	}
+}
+
+void Troca_Ponto(Lista* L)
+{
+	int Aux;
+	Dado* Cont;
+	string Tmp;
+	ifstream Txt("filename.txt");
+	if(Txt.is_open())
+  {
+		while(getline(Txt,Tmp))
+    {
+			Coloca_Na_Lista(L,Tmp);
+		}
+	}
+	for(Cont = L->Inicio;Cont!=NULL;Cont = Cont->Prox)
+  {
+		for(Aux=0;Aux<=100;Aux++)
+    {
+			if(Cont->Valor[Aux] == '/*replaced character*/')
+      {
+				Cont->Valor[Aux] = '/*new character*/,';
+			}
+		}
+	}
+	
+	ofstream Text("new_file_name.txt");
+	for(Cont=L->Inicio;Cont!=NULL;Cont = Cont->Prox)
+	{
+		Text << Cont->Valor << endl;
+	}
+}
+
+Lista L;
+
+int main()
+{
+	Cria_Lista(&L);
+	Troca_Ponto(&L);
+	Imprime(&L);
+	return 0;
+}
